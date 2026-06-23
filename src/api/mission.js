@@ -2,7 +2,8 @@ import axios from "axios";
 
 const API =
   //"http://localhost:5000";
-  "http://18.171.221.21:5000";
+  //"http://18.171.221.21:5000";
+  `${import.meta.env.VITE_API_URL}`
 
 export const verifyMission =
   async (
