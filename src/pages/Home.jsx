@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Play } from "lucide-react";
+import API from "../config/api";
 
 import BottomNav from "../components/BottomNav";
 import { translations } from "../data/translations";
@@ -48,11 +49,63 @@ export default function Home() {
 
   const t = translations[language];
 
-  useEffect(() => {
-  fetch("/api/daily-missions")
-    .then((res) => res.json())
-    .then((data) => setMissions(data))
-    .catch((err) => console.error(err))
+useEffect(() => {
+
+  const loadMissions = async () => {
+
+    try {
+
+      const res =
+        await API.get(
+          "/daily-missions/today"
+        );
+
+      setMissions(
+        res.data
+      );
+
+    } catch (err) {
+
+      console.log(
+        "Mission Load Error:",
+        err
+      );
+
+    }
+
+  };
+
+  loadMissions();
+
+}, []);
+
+useEffect(() => {
+
+  const loadMissions = async () => {
+    try {
+      const res =
+        await API.get(
+          "/daily-missions/today"
+        );
+
+      setMissions(res.data);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  loadMissions();
+
+  const interval =
+    setInterval(
+      loadMissions,
+      60000
+    ); // every minute
+
+  return () =>
+    clearInterval(interval);
+
 }, []);
 
   return (
@@ -294,18 +347,42 @@ export default function Home() {
 
           </div>
 
-          {missions.map((mission) => (
-            <MissionRow
-              key={mission.id}
-              title={
-                language === "fa"
-                  ? mission.title_fa
-                  : mission.title_en
-              }
-              progress={`${mission.progress} / ${mission.target}`}
-              reward={`${mission.reward} XP`}
-            />
-          ))}
+          {missions.length === 0 ? (
+
+  <div className="text-slate-400 text-center py-4">
+    No missions today
+  </div>
+
+) : (
+
+  missions.map((mission) => (
+
+    <MissionRow
+      key={mission.id}
+      title={
+        language === "fa"
+          ? mission.title_fa
+          : mission.title_en
+      }
+      progress={`${mission.progress}/${mission.target}`}
+      reward={
+  <>
+    <div className="text-right">
+  <div className="text-cyan-300 font-black drop-shadow">
+    ⚡ {mission.xp} XP
+  </div>
+
+  <div className="text-yellow-300 font-black drop-shadow">
+    🪙 {mission.barin} BARIN
+  </div>
+</div>
+  </>
+}
+    />
+
+  ))
+
+)}
 
         </div>
 
@@ -467,9 +544,9 @@ function MissionRow({
 
       </div>
 
-      <div className="text-yellow-500">
-        {reward}
-      </div>
+      <div className="text-right">
+      {reward}
+    </div>
 
     </div>
   );
