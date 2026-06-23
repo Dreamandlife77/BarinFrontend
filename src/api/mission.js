@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API =
-  "http://localhost:5000";
+  //"http://localhost:5000";
+  "http://18.171.221.21:5000";
 
 export const verifyMission =
   async (
