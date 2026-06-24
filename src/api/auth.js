@@ -7,6 +7,27 @@ const API = axios.create({
      `${import.meta.env.VITE_API_URL}/api/auth`
 });
 
+
+export const googleLogin =
+  async ({
+    googleId,
+    email,
+    name,
+  }) => {
+
+    const response =
+      await API.post(
+        "/google-login",
+        {
+          googleId,
+          email,
+          name,
+        }
+      );
+
+    return response.data;
+};
+
 export const loginUser =
   async ({
     email,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser, telegramLogin } from "../api/auth";
+import { loginUser, telegramLogin, googleLogin} from "../api/auth";
 
 import logo from "../assets/Auth.png";
 import Google from "../assets/google.png";
@@ -48,19 +48,16 @@ export default function Login() {
       );
 
       const response =
-        await API.post(
-          "/google-login",
-          {
-            googleId:
-              googleUser.uid,
+        await googleLogin({
+          googleId:
+            googleUser.uid,
 
-            email:
-              googleUser.email,
+          email:
+            googleUser.email,
 
-            name:
-              googleUser.displayName,
-          }
-        );
+          name:
+            googleUser.displayName,
+        });
 
       localStorage.setItem(
         "token",
