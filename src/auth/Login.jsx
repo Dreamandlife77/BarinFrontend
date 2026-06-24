@@ -5,6 +5,14 @@ import { loginUser, telegramLogin } from "../api/auth";
 import logo from "../assets/Auth.png";
 import Google from "../assets/google.png";
 import Telegram from "../assets/telegram.png";
+import {
+  signInWithPopup,
+} from "firebase/auth";
+
+import {
+  auth,
+  provider,
+} from "../firebase";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,6 +28,61 @@ export default function Login() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const handleGoogleLogin =
+  async () => {
+
+    try {
+
+      const result =
+        await signInWithPopup(
+          auth,
+          provider
+        );
+
+      const googleUser =
+        result.user;
+
+      console.log(
+        googleUser
+      );
+
+      const response =
+        await API.post(
+          "/google-login",
+          {
+            googleId:
+              googleUser.uid,
+
+            email:
+              googleUser.email,
+
+            name:
+              googleUser.displayName,
+          }
+        );
+
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          response.data.user
+        )
+      );
+
+      navigate("/home");
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+};
 
   const handleTelegramLogin =
   async () => {
@@ -265,11 +328,7 @@ export default function Login() {
       {/* Google Login */}
 
       <button
-        onClick={() => {
-          console.log(
-            "Google Login"
-          );
-        }}
+        onClick={handleGoogleLogin}
         className="
           w-full
           mt-4
