@@ -55,7 +55,12 @@ useEffect(() => {
 
   const finishGoogleLogin =
     async () => {
+    console.log("LOGIN PAGE LOADED");
 
+    const result =
+      await getRedirectResult(auth);
+
+    console.log("REDIRECT RESULT:", result);
       try {
 
         const result =
