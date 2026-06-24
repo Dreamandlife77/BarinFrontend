@@ -31,56 +31,50 @@ export default function Login() {
   const [loading, setLoading] =
     useState(false);
 
- const handleGoogleLogin =
-async () => {
-
+ const handleGoogleLogin = async () => {
   try {
 
-    const result =
-      await signInWithPopup(
+    const isTelegram =
+  window.Telegram?.WebApp;
+
+if (isTelegram) {
+
+  await signInWithRedirect(
+    auth,
+    provider
+  );
+
+} else {
+
+  const result =
+    await signInWithPopup(
+      auth,
+      provider
+    );
+
+  await processGoogleUser(
+    result.user
+  );
+
+}
+  } catch (err) {
+
+    console.log(err);
+
+    if (
+      err.code ===
+      "auth/popup-blocked"
+    ) {
+
+      await signInWithRedirect(
         auth,
         provider
       );
 
-    const googleUser =
-      result.user;
-
-    console.log(
-      "Google User:",
-      googleUser
-    );
-
-    const response =
-      await googleLogin({
-        googleId: googleUser.uid,
-        email: googleUser.email,
-        name: googleUser.displayName,
-      });
-
-    localStorage.setItem(
-      "token",
-      response.token
-    );
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(
-        response.user
-      )
-    );
-
-    navigate("/home");
-
-  } catch (err) {
-
-    console.log(
-      "Google Login Error:",
-      err
-    );
+    }
 
   }
-
-}; 
+};
 
 useEffect(() => {
 
