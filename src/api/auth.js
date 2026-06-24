@@ -25,6 +25,20 @@ export const loginUser =
     return response.data;
   };
 
+  // api/auth.js
+
+export const telegramLogin =
+  async (telegramUser) => {
+
+    const response =
+      await API.post(
+        "/telegram-login",
+        telegramUser
+      );
+
+    return response.data;
+};
+
 export const registerUser =
   async ({
     name,

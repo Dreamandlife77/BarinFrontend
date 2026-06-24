@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/auth";
+import { loginUser, telegramLogin } from "../api/auth";
 
 import logo from "../assets/Auth.png";
 import Google from "../assets/google.png";
@@ -20,6 +20,42 @@ export default function Login() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const handleTelegramLogin =
+  async () => {
+
+    try {
+
+      const tg =
+        window.Telegram.WebApp;
+
+      const user =
+        tg.initDataUnsafe.user;
+
+      const response =
+        await telegramLogin(user);
+
+      localStorage.setItem(
+        "token",
+        response.token
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          response.user
+        )
+      );
+
+      navigate("/home");
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+};
 
   const handleLogin =
   async () => {
@@ -202,11 +238,7 @@ export default function Login() {
       {/* Telegram Login */}
 
       <button
-        onClick={() => {
-          console.log(
-            "Telegram Login"
-          );
-        }}
+        onClick={handleTelegramLogin}
         className="
           w-full
           mt-6
