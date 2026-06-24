@@ -49,11 +49,9 @@ const handleGoogleLogin = async () => {
     }
 
     const result =
-      await signInWithPopup(
-        auth,
-        provider
-      );
-
+      await 
+      Telegram.WebApp.openLink(`${import.meta.env.VITE_API_URL}/api/auth/google`);
+      
     const googleUser =
       result.user;
 
