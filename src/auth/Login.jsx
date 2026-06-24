@@ -6,8 +6,8 @@ import logo from "../assets/Auth.png";
 import Google from "../assets/google.png";
 import Telegram from "../assets/telegram.png";
 import {
-  signInWithPopup,
-  getRedirectResult
+  signInWithRedirect,
+  getRedirectResult,
 } from "firebase/auth";
 
 import {
@@ -63,9 +63,7 @@ useEffect(() => {
             auth
           );
 
-        if (!result) {
-          return;
-        }
+        if (!result) return;
 
         const googleUser =
           result.user;
@@ -86,6 +84,11 @@ useEffect(() => {
             name:
               googleUser.displayName,
           });
+
+        console.log(
+          "Backend Response:",
+          response
+        );
 
         localStorage.setItem(
           "token",
@@ -114,7 +117,7 @@ useEffect(() => {
 
   finishGoogleLogin();
 
-}, []);
+}, [navigate]);
 
   const handleTelegramLogin =
   async () => {
