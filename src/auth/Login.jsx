@@ -8,6 +8,7 @@ import Telegram from "../assets/telegram.png";
 import {
   signInWithRedirect,
   getRedirectResult,
+   signInWithPopup,
 } from "firebase/auth";
 
 import {
@@ -30,26 +31,56 @@ export default function Login() {
   const [loading, setLoading] =
     useState(false);
 
-  const handleGoogleLogin =
-  async () => {
+ const handleGoogleLogin =
+async () => {
 
-    try {
+  try {
 
-      await signInWithRedirect(
+    const result =
+      await signInWithPopup(
         auth,
         provider
       );
 
-    } catch (err) {
+    const googleUser =
+      result.user;
 
-      console.log(
-        "Google Redirect Error:",
-        err
-      );
+    console.log(
+      "Google User:",
+      googleUser
+    );
 
-    }
+    const response =
+      await googleLogin({
+        googleId: googleUser.uid,
+        email: googleUser.email,
+        name: googleUser.displayName,
+      });
 
-};
+    localStorage.setItem(
+      "token",
+      response.token
+    );
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(
+        response.user
+      )
+    );
+
+    navigate("/home");
+
+  } catch (err) {
+
+    console.log(
+      "Google Login Error:",
+      err
+    );
+
+  }
+
+}; 
 
 useEffect(() => {
 
