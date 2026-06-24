@@ -31,61 +31,74 @@ export default function Login() {
   const [loading, setLoading] =
     useState(false);
 
- const handleGoogleLogin = async () => {
+const handleGoogleLogin = async () => {
+
   try {
 
     const isTelegram =
-  window.Telegram?.WebApp;
+      window.Telegram?.WebApp;
 
-if (isTelegram) {
-
-  await signInWithRedirect(
-    auth,
-    provider
-  );
-
-} else {
-
-  const result =
-    await signInWithPopup(
-      auth,
-      provider
-    );
-
-  await processGoogleUser(
-    result.user
-  );
-
-}
-  } catch (err) {
-
-    console.log(err);
-
-    if (
-      err.code ===
-      "auth/popup-blocked"
-    ) {
+    if (isTelegram) {
 
       await signInWithRedirect(
         auth,
         provider
       );
 
+      return;
     }
 
+    const result =
+      await signInWithPopup(
+        auth,
+        provider
+      );
+
+    const googleUser =
+      result.user;
+
+    const response =
+      await googleLogin({
+        googleId:
+          googleUser.uid,
+
+        email:
+          googleUser.email,
+
+        name:
+          googleUser.displayName,
+      });
+
+    localStorage.setItem(
+      "token",
+      response.token
+    );
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(
+        response.user
+      )
+    );
+
+    navigate("/home");
+
+  } catch (err) {
+
+    console.log(
+      "Google Login Error:",
+      err
+    );
+
   }
+
 };
 
 useEffect(() => {
 
   const finishGoogleLogin =
     async () => {
-    console.log("LOGIN PAGE LOADED");
 
-    const result =
-      await getRedirectResult(auth);
-
-    console.log("REDIRECT RESULT:", result);
       try {
 
         const result =
@@ -93,15 +106,17 @@ useEffect(() => {
             auth
           );
 
-        if (!result) return;
+        console.log(
+          "REDIRECT RESULT:",
+          result
+        );
+
+        if (!result) {
+          return;
+        }
 
         const googleUser =
           result.user;
-
-        console.log(
-          "Google User:",
-          googleUser
-        );
 
         const response =
           await googleLogin({
@@ -114,11 +129,6 @@ useEffect(() => {
             name:
               googleUser.displayName,
           });
-
-        console.log(
-          "Backend Response:",
-          response
-        );
 
         localStorage.setItem(
           "token",
@@ -137,7 +147,7 @@ useEffect(() => {
       } catch (err) {
 
         console.log(
-          "Google Login Error:",
+          "Google Redirect Error:",
           err
         );
 
