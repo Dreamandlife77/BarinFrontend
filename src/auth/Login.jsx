@@ -7,6 +7,7 @@ import Google from "../assets/google.png";
 import Telegram from "../assets/telegram.png";
 import {
   signInWithPopup,
+  getRedirectResult
 } from "firebase/auth";
 
 import {
@@ -34,52 +35,86 @@ export default function Login() {
 
     try {
 
-      const result =
-        await signInWithPopup(
-          auth,
-          provider
-        );
-
-      const googleUser =
-        result.user;
-
-      console.log(
-        googleUser
+      await signInWithRedirect(
+        auth,
+        provider
       );
-
-      const response =
-        await googleLogin({
-          googleId:
-            googleUser.uid,
-
-          email:
-            googleUser.email,
-
-          name:
-            googleUser.displayName,
-        });
-
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(
-          response.data.user
-        )
-      );
-
-      navigate("/home");
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        "Google Redirect Error:",
+        err
+      );
 
     }
 
 };
+
+useEffect(() => {
+
+  const finishGoogleLogin =
+    async () => {
+
+      try {
+
+        const result =
+          await getRedirectResult(
+            auth
+          );
+
+        if (!result) {
+          return;
+        }
+
+        const googleUser =
+          result.user;
+
+        console.log(
+          "Google User:",
+          googleUser
+        );
+
+        const response =
+          await googleLogin({
+            googleId:
+              googleUser.uid,
+
+            email:
+              googleUser.email,
+
+            name:
+              googleUser.displayName,
+          });
+
+        localStorage.setItem(
+          "token",
+          response.token
+        );
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            response.user
+          )
+        );
+
+        navigate("/home");
+
+      } catch (err) {
+
+        console.log(
+          "Google Login Error:",
+          err
+        );
+
+      }
+
+    };
+
+  finishGoogleLogin();
+
+}, []);
 
   const handleTelegramLogin =
   async () => {
