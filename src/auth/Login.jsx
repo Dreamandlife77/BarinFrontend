@@ -373,7 +373,7 @@ useEffect(() => {
 
       {/* Telegram Login */}
 
-      <button
+      {/* <button
         onClick={handleTelegramLogin}
         className="
           w-full
@@ -398,7 +398,7 @@ useEffect(() => {
         Continue with Telegram
       </button>
 
-      {/* Google Login */}
+     
 
       <button
         onClick={handleGoogleLogin}
@@ -423,7 +423,7 @@ useEffect(() => {
         />
 
         Continue with Google
-      </button>
+      </button> */}
 
       {/* Register */}
 

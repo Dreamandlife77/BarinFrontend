@@ -20,6 +20,72 @@ export default function Home() {
   const [missions, setMissions] = useState([]);
   const navigate = useNavigate();
 
+  const [dailyCode, setDailyCode] = useState("");
+const [checkingCode, setCheckingCode] = useState(false);
+
+const [showRewardPopup, setShowRewardPopup] = useState(false);
+const [rewardData, setRewardData] = useState(null);
+
+const verifyDailyCode = async () => {
+
+  if (!dailyCode.trim()) {
+    return;
+  }
+
+  try {
+
+    setCheckingCode(true);
+
+    const res = await API.post(
+  "/missions/verify-code",
+  {
+    code: dailyCode,
+  }
+);
+
+    setRewardData({
+      title: "Code Accepted!",
+      barin: 20,
+      xp: 20
+    });
+
+    setShowRewardPopup(true);
+
+    setTimeout(() => {
+      setShowRewardPopup(false);
+    }, 2500);
+
+    setDailyCode("");
+
+    // reload missions
+    const missionRes =
+      await API.get("/daily-missions/today");
+
+    setMissions(missionRes.data);
+
+  } catch (err) {
+
+  setRewardData({
+    title: "Wrong Code",
+    message:
+      err.response?.data?.message ||
+      "Something went wrong."
+  });
+
+  setShowRewardPopup(true);
+
+  setTimeout(() => {
+    setShowRewardPopup(false);
+  }, 2500);
+
+} finally {
+
+    setCheckingCode(false);
+
+  }
+
+};
+
   const { id } = useParams();
 
   const currentExpert =
@@ -321,72 +387,111 @@ useEffect(() => {
 
       </div>
 
-      
-
       {/* Missions */}
 
-      <div className="px-4 mt-4">
+<div className="px-4 mt-4">
 
-        <div
+  <div
+    className="
+      bg-slate-900
+      rounded-2xl
+      p-4
+    "
+  >
+
+    {/* Header */}
+    <h3 className="text-white font-bold text-lg">
+      {t.todayMissions}
+    </h3>
+
+    {/* Today's Code */}
+    <div className="mt-4 mb-5">
+
+      <div className="text-yellow-400 text-sm font-bold mb-2">
+        Today's Code
+      </div>
+
+      <div className="flex gap-2">
+
+        <input
+          value={dailyCode}
+          onChange={(e) => setDailyCode(e.target.value)}
+          placeholder="Enter today's code"
           className="
-            bg-slate-900
-            rounded-2xl
-            p-4
+            flex-1
+            bg-slate-800
+            border
+            border-yellow-500
+            rounded-lg
+            px-3
+            py-2
+            text-white
+            outline-none
+          "
+        />
+
+        <button
+          disabled={checkingCode}
+          onClick={verifyDailyCode}
+          className="
+            px-5
+            rounded-lg
+            bg-yellow-500
+            text-black
+            font-bold
+            hover:bg-yellow-400
+            disabled:opacity-50
           "
         >
-
-          <div className="flex justify-between mb-3">
-
-            <h3 className="text-white font-bold">
-              {t.todayMissions}
-            </h3>
-
-            {/* <span className="text-yellow-500">
-              2 / 3
-            </span> */}
-
-          </div>
-
-          {missions.length === 0 ? (
-
-  <div className="text-slate-400 text-center py-4">
-    No missions today
-  </div>
-
-) : (
-
-  missions.map((mission) => (
-
-    <MissionRow
-      key={mission.id}
-      title={
-        language === "fa"
-          ? mission.title_fa
-          : mission.title_en
-      }
-      progress={`${mission.progress}/${mission.target}`}
-      reward={
-  <>
-    <div className="text-right">
-  <div className="text-cyan-300 font-black drop-shadow">
-    ⚡ {mission.xp} XP
-  </div>
-
-  <div className="text-yellow-300 font-black drop-shadow">
-    🪙 {mission.barin} BARIN
-  </div>
-</div>
-  </>
-}
-    />
-
-  ))
-
-)}
-
-        </div>
+          {checkingCode ? "..." : "Confirm"}
+        </button>
 
       </div>
+
+    </div>
+
+    {/* Mission List */}
+
+    {missions.length === 0 ? (
+
+      <div className="text-slate-400 text-center py-4">
+        No missions today
+      </div>
+
+    ) : (
+
+      missions.map((mission) => (
+
+        <MissionRow
+          key={mission.id}
+          title={
+            language === "fa"
+              ? mission.title_fa
+              : mission.title_en
+          }
+          progress={`${mission.progress}/${mission.target}`}
+          reward={
+            <div className="text-right">
+
+              <div className="text-cyan-300 font-black">
+                ⚡ {mission.xp} XP
+              </div>
+
+              <div className="text-yellow-300 font-black">
+                🪙 {mission.barin} BARIN
+              </div>
+
+            </div>
+          }
+        />
+
+      ))
+
+    )}
+
+  </div>
+
+</div>
 
       {/* Mining Card */}
 
@@ -503,14 +608,71 @@ useEffect(() => {
       {
   showDailyRewards && (
     <DailyRewardsModal
-      onClose={() =>
-        setShowDailyRewards(false)
-      }
+      onClose={() => setShowDailyRewards(false)}
     />
   )
 }
 
-      <BottomNav />
+{/* Reward Popup */}
+{showRewardPopup && (
+
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+
+    <div
+      className="
+        animate-[popup_.35s_ease]
+        bg-[#091827]
+        border-2
+        border-yellow-400
+        rounded-3xl
+        w-80
+        p-6
+        text-center
+        shadow-[0_0_35px_rgba(255,200,0,.45)]
+      "
+    >
+
+      <div className="text-6xl mb-3">
+        🎁
+      </div>
+
+      <h2 className="text-yellow-400 text-2xl font-black">
+        {rewardData?.title}
+      </h2>
+
+      {rewardData?.message ? (
+
+        <p className="text-white mt-4">
+          {rewardData.message}
+        </p>
+
+      ) : (
+
+        <>
+
+          <div className="mt-5 text-yellow-300 text-xl font-black">
+            +{rewardData?.barin} BARIN
+          </div>
+
+          <div className="text-cyan-300 text-xl font-black">
+            +{rewardData?.xp} XP
+          </div>
+
+          <div className="mt-5 text-green-400 font-bold">
+            Reward Added Successfully
+          </div>
+
+        </>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
+
+<BottomNav />
 
     </div>
   );
@@ -531,7 +693,6 @@ function MissionRow({
         border-slate-800
       "
     >
-
       <div>
 
         <div className="text-white">
@@ -545,8 +706,8 @@ function MissionRow({
       </div>
 
       <div className="text-right">
-      {reward}
-    </div>
+        {reward}
+      </div>
 
     </div>
   );
