@@ -9,7 +9,6 @@ import { minerals } from "../data/mineralData";
 import { useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
-
 import { Gift } from "lucide-react";
 import DailyRewardsModal from "../components/DailyRewardsModal";
 
@@ -105,6 +104,7 @@ const verifyDailyCode = async () => {
 
   const [language, setLanguage] =
   useState("en");
+
 
   useEffect(() => {
     const savedLanguage =
@@ -222,6 +222,8 @@ useEffect(() => {
     animate-bounce
   "
 >
+
+  
   <Gift
     size={24}
     className="text-black"
@@ -234,7 +236,6 @@ useEffect(() => {
       </div>
 
       <div className="px-4">
-
         <div
           className="
             bg-slate-900
@@ -404,8 +405,12 @@ useEffect(() => {
       {t.todayMissions}
     </h3>
 
+    
+
     {/* Today's Code */}
     <div className="mt-4 mb-5">
+
+
 
       <div className="text-yellow-400 text-sm font-bold mb-2">
         Today's Code

@@ -3,7 +3,8 @@ import {
   User,
   Trophy,
   ScrollText,
-  Pickaxe
+  Pickaxe,
+  Wallet
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -40,6 +41,13 @@ export default function BottomNav() {
       >
         <ScrollText size={22} />
       </Link>
+
+      <Link
+    to="/wallet"
+    className={activeClass("/wallet")}
+  >
+    <Wallet size={22}/>
+  </Link>
 
       <Link
         to="/leaderboard"

@@ -12,6 +12,7 @@ import Register from "./auth/Register";
 import Login from "./auth/Login";
 import EducationDetail from "./pages/EducationDetail";
 import Home from "./pages/Home.jsx"
+import WalletPage from "./pages/Wallet";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
         <Route path="/education/:id"  element={<EducationDetail />} />
         <Route path="/register"  element={<Register />} />
         <Route path="/login"  element={<Login />} />
+        <Route path="/wallet" element={<WalletPage />}
+/>
       </Routes>
     </BrowserRouter>
   );
